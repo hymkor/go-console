@@ -7,26 +7,8 @@ import (
 	"unsafe"
 )
 
-type coordT struct {
-	x int16
-	y int16
-}
-
-func (c coordT) X() int         { return int(c.x) }
-func (c coordT) Y() int         { return int(c.y) }
-func (c coordT) XY() (int, int) { return int(c.x), int(c.y) }
-
-type smallRectT struct {
-	left   int16
-	top    int16
-	right  int16
-	bottom int16
-}
-
-func (s smallRectT) Left() int   { return int(s.left) }
-func (s smallRectT) Top() int    { return int(s.top) }
-func (s smallRectT) Right() int  { return int(s.right) }
-func (s smallRectT) Bottom() int { return int(s.bottom) }
+type coordT = console.CoordT
+type smallRectT = console.SmallRectT
 
 // ConsoleScreenBufferInfoT is the type for structure contains terminal's information.
 type ConsoleScreenBufferInfoT struct {
