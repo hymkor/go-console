@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/zetamatta/go-getch/consoleoutput"
+	"github.com/zetamatta/go-conio/consoleoutput"
 	"os"
 )
 

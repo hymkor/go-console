@@ -1,7 +1,7 @@
 package typekeyas
 
 import (
-	"github.com/zetamatta/go-getch/consoleinput"
+	"github.com/zetamatta/go-conio/consoleinput"
 )
 
 func Rune(handle consoleinput.Handle, c rune) uint32 {

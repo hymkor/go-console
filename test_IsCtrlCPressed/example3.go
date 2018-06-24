@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/zetamatta/go-getch"
+	"github.com/zetamatta/go-conio/getch"
 )
 
 func main() {

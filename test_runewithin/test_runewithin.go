@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/zetamatta/go-getch"
+	"github.com/zetamatta/go-conio/getch"
 )
 
 func main() {

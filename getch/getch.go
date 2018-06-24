@@ -6,7 +6,7 @@ import (
 	"strings"
 	"unicode/utf16"
 
-	"github.com/zetamatta/go-getch/consoleinput"
+	"github.com/zetamatta/go-conio/consoleinput"
 )
 
 const (
