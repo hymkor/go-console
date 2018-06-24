@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/zetamatta/go-conio/getch"
+	"github.com/zetamatta/go-console/getch"
 )
 
 func main() {
-	time.Sleep(time.Second/10)
+	time.Sleep(time.Second / 10)
 	getch.Flush()
 
 	// wait keyboard-event (timeout: 10-seconds)

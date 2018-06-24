@@ -2,15 +2,13 @@ package main
 
 import (
 	"fmt"
-	"github.com/zetamatta/go-conio/consoleoutput"
 	"os"
+
+	"github.com/zetamatta/go-console/output"
 )
 
 func Main() error {
-	console, err := consoleoutput.New()
-	if err != nil {
-		return err
-	}
+	console := consoleoutput.New()
 	defer console.Close()
 
 	for _, arg1 := range os.Args {

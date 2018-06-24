@@ -6,11 +6,7 @@ func lazyinit() {
 	if hconin != nil {
 		return
 	}
-	var err error
-	hconin, err = New()
-	if err != nil {
-		panic(err.Error())
-	}
+	hconin = New()
 }
 
 // Get all console-event (keyboard,resize,...)

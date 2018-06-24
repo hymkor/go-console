@@ -3,6 +3,7 @@
 package csbi
 
 import (
+	"github.com/zetamatta/go-console"
 	"unsafe"
 )
 
@@ -36,14 +37,14 @@ type ConsoleScreenBufferInfoT struct {
 	MaximumWindowSize coordT
 }
 
-var getConsoleScreenBufferInfo = kernel32.NewProc("GetConsoleScreenBufferInfo")
+var getConsoleScreenBufferInfo = console.Kernel32.NewProc("GetConsoleScreenBufferInfo")
 
 // GetConsoleScreenBufferInfo returns the latest ConsoleScreenBufferInfoT
 // cursor position, window region.
 func GetConsoleScreenBufferInfo() *ConsoleScreenBufferInfoT {
 	var csbi ConsoleScreenBufferInfoT
 	getConsoleScreenBufferInfo.Call(
-		uintptr(ConOut()),
+		uintptr(console.Out()),
 		uintptr(unsafe.Pointer(&csbi)))
 	return &csbi
 }

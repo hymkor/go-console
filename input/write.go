@@ -2,9 +2,11 @@ package consoleinput
 
 import (
 	"unsafe"
+
+	"github.com/zetamatta/go-console"
 )
 
-var writeConsoleInput = kernel32.NewProc("WriteConsoleInputW")
+var writeConsoleInput = console.Kernel32.NewProc("WriteConsoleInputW")
 
 func (handle Handle) Write(events []InputRecord) uint32 {
 	var count uint32

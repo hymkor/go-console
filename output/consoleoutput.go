@@ -6,18 +6,14 @@ import (
 	"strings"
 	"syscall"
 	"unsafe"
-)
 
-var kernel32 = syscall.NewLazyDLL("kernel32")
+	"github.com/zetamatta/go-console"
+)
 
 type Handle syscall.Handle
 
-func New() (Handle, error) {
-	handle, err := syscall.Open("CONOUT$", syscall.O_RDWR, 0)
-	if err != nil {
-		return Handle(0), err
-	}
-	return Handle(handle), nil
+func New() Handle {
+	return Handle(console.Out())
 }
 
 func (handle Handle) Close() error {
@@ -42,7 +38,7 @@ const (
 	COMMON_LVB_TRAILING_BYTE = 0x0200
 )
 
-var readConsoleOutput = kernel32.NewProc("ReadConsoleOutputW")
+var readConsoleOutput = console.Kernel32.NewProc("ReadConsoleOutputW")
 
 func (handle Handle) ReadConsoleOutput(buffer []CharInfoT, size Coord, coord Coord, read_region *SmallRect) error {
 
@@ -85,7 +81,7 @@ func (this *console_screen_buffer_info_t) CursorY() int {
 	return int(this.CursorPosition.Y)
 }
 
-var getConsoleScreenBufferInfo = kernel32.NewProc("GetConsoleScreenBufferInfo")
+var getConsoleScreenBufferInfo = console.Kernel32.NewProc("GetConsoleScreenBufferInfo")
 
 func (handle Handle) GetScreenBufferInfo() (*console_screen_buffer_info_t, error) {
 	var csbi console_screen_buffer_info_t

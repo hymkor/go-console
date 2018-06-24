@@ -3,16 +3,16 @@ package main
 import (
 	"fmt"
 
-	"github.com/zetamatta/go-conio/getch"
+	"github.com/zetamatta/go-console/getch"
 )
 
 func main() {
 	for i := 0; i < 5; i++ {
-		r, err := getch.RuneWithin(1000)
+		e, err := getch.Within(1000)
 		if err != nil {
 			fmt.Println(err.Error())
 		} else {
-			fmt.Printf("typed = '%v'\n", r)
+			fmt.Println(e.String())
 		}
 	}
 }

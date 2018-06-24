@@ -3,9 +3,11 @@ package consoleinput
 import (
 	"fmt"
 	"unsafe"
+
+	"github.com/zetamatta/go-console"
 )
 
-var readConsoleInput = kernel32.NewProc("ReadConsoleInputW")
+var readConsoleInput = console.Kernel32.NewProc("ReadConsoleInputW")
 
 type InputRecord struct {
 	EventType uint16

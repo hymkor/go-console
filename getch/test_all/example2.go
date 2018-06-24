@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/zetamatta/go-conio/getch"
+	"github.com/zetamatta/go-console/getch"
 )
 
 const COUNT = 5

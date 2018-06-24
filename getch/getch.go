@@ -6,7 +6,7 @@ import (
 	"strings"
 	"unicode/utf16"
 
-	"github.com/zetamatta/go-conio/consoleinput"
+	"github.com/zetamatta/go-console/input"
 )
 
 const (
@@ -89,12 +89,8 @@ type Handle struct {
 	eventBufferRead int
 }
 
-func New() (*Handle, error) {
-	handle, err := consoleinput.New()
-	if err != nil {
-		return nil, err
-	}
-	return &Handle{Handle: handle}, nil
+func New() *Handle {
+	return &Handle{Handle: consoleinput.New()}
 }
 
 func (h *Handle) Close() {
