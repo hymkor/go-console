@@ -3,6 +3,7 @@
 package csbi
 
 import (
+	"syscall"
 	"github.com/zetamatta/go-console"
 	"unsafe"
 )
@@ -37,14 +38,20 @@ func (csbi *ConsoleScreenBufferInfoT) Height() int {
 
 var getConsoleScreenBufferInfo = console.Kernel32.NewProc("GetConsoleScreenBufferInfo")
 
+type Handle syscall.Handle
+
+func (h Handle) GetConsoleScreenBufferInfo() *ConsoleScreenBufferInfoT {
+	var csbi ConsoleScreenBufferInfoT
+	getConsoleScreenBufferInfo.Call(
+		uintptr(h),
+		uintptr(unsafe.Pointer(&csbi)))
+	return &csbi
+}
+
 // GetConsoleScreenBufferInfo returns the latest ConsoleScreenBufferInfoT
 // cursor position, window region.
 func GetConsoleScreenBufferInfo() *ConsoleScreenBufferInfoT {
-	var csbi ConsoleScreenBufferInfoT
-	getConsoleScreenBufferInfo.Call(
-		uintptr(console.Out()),
-		uintptr(unsafe.Pointer(&csbi)))
-	return &csbi
+	return Handle(console.Out()).GetConsoleScreenBufferInfo()
 }
 
 // ViewSize returns window size from ConsoleScreenBufferInfo structure.
