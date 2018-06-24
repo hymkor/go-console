@@ -21,15 +21,18 @@ type SmallRectT struct {
 	bottom int16
 }
 
+func LeftTopRightBottom(L, T, R, B int) *SmallRectT {
+	return &SmallRectT{
+		left:   int16(L),
+		top:    int16(T),
+		right:  int16(R),
+		bottom: int16(B),
+	}
+}
 func (s SmallRectT) Left() int   { return int(s.left) }
 func (s SmallRectT) Top() int    { return int(s.top) }
 func (s SmallRectT) Right() int  { return int(s.right) }
 func (s SmallRectT) Bottom() int { return int(s.bottom) }
-
-
-
-
-
 
 // Handle is the alias of syscall.Handle
 type Handle = syscall.Handle

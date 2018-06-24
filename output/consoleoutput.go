@@ -2,35 +2,19 @@ package consoleoutput
 
 import (
 	"bytes"
-	"fmt"
 	"strings"
-	"syscall"
 	"unsafe"
 
 	"github.com/zetamatta/go-console"
+	"github.com/zetamatta/go-console/screenbuffer"
 )
 
-type Handle syscall.Handle
-
-func New() Handle {
-	return Handle(console.Out())
-}
-
-func (handle Handle) Close() error {
-	return syscall.Close(syscall.Handle(handle))
-}
+type Coord = console.CoordT
+type SmallRect = console.SmallRectT
 
 type CharInfoT struct {
 	UnicodeChar uint16
 	Attributes  uint16
-}
-
-type SmallRect struct {
-	Left, Top, Right, Bottom int16
-}
-
-type Coord struct {
-	X, Y int16
 }
 
 const (
@@ -40,13 +24,13 @@ const (
 
 var readConsoleOutput = console.Kernel32.NewProc("ReadConsoleOutputW")
 
-func (handle Handle) ReadConsoleOutput(buffer []CharInfoT, size Coord, coord Coord, read_region *SmallRect) error {
+func ReadConsoleOutput(buffer []CharInfoT, size Coord, coord Coord, read_region *SmallRect) error {
 
 	sizeValue := *(*uintptr)(unsafe.Pointer(&size))
 	coordValue := *(*uintptr)(unsafe.Pointer(&coord))
 
 	status, _, err := readConsoleOutput.Call(
-		uintptr(handle),
+		uintptr(console.Out()),
 		uintptr(unsafe.Pointer(&buffer[0])),
 		sizeValue,
 		coordValue,
@@ -57,48 +41,8 @@ func (handle Handle) ReadConsoleOutput(buffer []CharInfoT, size Coord, coord Coo
 	return nil
 }
 
-type console_screen_buffer_info_t struct {
-	Size              Coord
-	CursorPosition    Coord
-	Attributes        uint16
-	Window            SmallRect
-	MaximumWindowSize Coord
-}
-
-func (this *console_screen_buffer_info_t) Width() int {
-	return int(this.Size.X)
-}
-
-func (this *console_screen_buffer_info_t) Height() int {
-	return int(this.Size.Y)
-}
-
-func (this *console_screen_buffer_info_t) CursorX() int {
-	return int(this.CursorPosition.X)
-}
-
-func (this *console_screen_buffer_info_t) CursorY() int {
-	return int(this.CursorPosition.Y)
-}
-
-var getConsoleScreenBufferInfo = console.Kernel32.NewProc("GetConsoleScreenBufferInfo")
-
-func (handle Handle) GetScreenBufferInfo() (*console_screen_buffer_info_t, error) {
-	var csbi console_screen_buffer_info_t
-	status, _, err := getConsoleScreenBufferInfo.Call(
-		uintptr(handle),
-		uintptr(unsafe.Pointer(&csbi)))
-	if status == 0 {
-		return nil, fmt.Errorf("GetConsoleScreenBufferInfo: %s", err.Error())
-	}
-	return &csbi, nil
-}
-
-func (handle Handle) GetRecentOutput() (string, error) {
-	screen, err := handle.GetScreenBufferInfo()
-	if err != nil {
-		return "", err
-	}
+func GetRecentOutput() (string, error) {
+	screen := csbi.GetConsoleScreenBufferInfo()
 
 	y := 0
 	h := 1
@@ -107,16 +51,11 @@ func (handle Handle) GetRecentOutput() (string, error) {
 		h++
 	}
 
-	region := &SmallRect{
-		Left:   0,
-		Top:    int16(y),
-		Right:  screen.Size.X - 1,
-		Bottom: int16(y + h - 1),
-	}
+	region := console.LeftTopRightBottom(0, y, screen.Size.X(), y+h-1)
 
-	home := &Coord{X: 0, Y: 0}
+	home := &Coord{}
 	charinfo := make([]CharInfoT, screen.Width()*screen.Height())
-	err = handle.ReadConsoleOutput(charinfo, screen.Size, *home, region)
+	err := ReadConsoleOutput(charinfo, screen.Size, *home, region)
 	if err != nil {
 		return "", err
 	}
