@@ -8,18 +8,15 @@ import (
 )
 
 func Main() error {
-	console := consoleoutput.New()
-	defer console.Close()
-
 	for _, arg1 := range os.Args {
 		fmt.Println(arg1)
-		output, err := console.GetRecentOutput()
+		output, err := consoleoutput.GetRecentOutput()
 		if err != nil {
 			return err
 		}
 		fmt.Printf("-->[%s]\n", output)
 		fmt.Print(arg1)
-		output, err = console.GetRecentOutput()
+		output, err = consoleoutput.GetRecentOutput()
 		if err != nil {
 			return err
 		}

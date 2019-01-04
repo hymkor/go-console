@@ -5,8 +5,9 @@ import (
 	"strings"
 	"unsafe"
 
+	"golang.org/x/sys/windows"
+
 	"github.com/zetamatta/go-console"
-	"github.com/zetamatta/go-console/screenbuffer"
 )
 
 type Coord = console.CoordT
@@ -22,15 +23,15 @@ const (
 	COMMON_LVB_TRAILING_BYTE = 0x0200
 )
 
-var readConsoleOutput = console.Kernel32.NewProc("ReadConsoleOutputW")
+var procReadConsoleOutput = console.Kernel32.NewProc("ReadConsoleOutputW")
 
-func ReadConsoleOutput(buffer []CharInfoT, size Coord, coord Coord, read_region *SmallRect) error {
+func readConsoleOutput(buffer []CharInfoT, size windows.Coord, coord windows.Coord, read_region *windows.SmallRect) error {
 
 	sizeValue := *(*uintptr)(unsafe.Pointer(&size))
 	coordValue := *(*uintptr)(unsafe.Pointer(&coord))
 
-	status, _, err := readConsoleOutput.Call(
-		uintptr(console.Out()),
+	status, _, err := procReadConsoleOutput.Call(
+		uintptr(windows.Stdout),
 		uintptr(unsafe.Pointer(&buffer[0])),
 		sizeValue,
 		coordValue,
@@ -41,29 +42,47 @@ func ReadConsoleOutput(buffer []CharInfoT, size Coord, coord Coord, read_region 
 	return nil
 }
 
+// for compatible
+func ReadConsoleOutput(buffer []CharInfoT, size Coord, coord Coord, read_region *SmallRect) error {
+	return readConsoleOutput(
+		buffer,
+		windows.Coord{int16(size.X()), int16(size.Y())},
+		windows.Coord{int16(coord.X()), int16(coord.Y())},
+		(*windows.SmallRect)(unsafe.Pointer(read_region)))
+}
+
 func GetRecentOutput() (string, error) {
-	screen := csbi.GetConsoleScreenBufferInfo()
+	var screen windows.ConsoleScreenBufferInfo
+	err := windows.GetConsoleScreenBufferInfo(windows.Stdout, &screen)
+	if err != nil {
+		return "", err
+	}
 
 	y := 0
 	h := 1
-	if screen.CursorY() >= 1 {
-		y = screen.CursorY() - 1
+	if screen.CursorPosition.Y >= 1 {
+		y = int(screen.CursorPosition.Y - 1)
 		h++
 	}
 
-	region := console.LeftTopRightBottom(0, y, screen.Size.X(), y+h-1)
+	region := &windows.SmallRect{
+		Left:   0,
+		Top:    int16(y),
+		Right:  int16(screen.Size.X),
+		Bottom: int16(y + h - 1),
+	}
 
-	home := &Coord{}
-	charinfo := make([]CharInfoT, screen.Width()*screen.Height())
-	err := ReadConsoleOutput(charinfo, screen.Size, *home, region)
+	home := &windows.Coord{}
+	charinfo := make([]CharInfoT, int(screen.Size.X)*int(screen.Size.Y))
+	err = readConsoleOutput(charinfo, screen.Size, *home, region)
 	if err != nil {
 		return "", err
 	}
 
 	var buffer bytes.Buffer
-	for i := 0; i < screen.Height(); i++ {
-		for j := 0; j < screen.Width(); j++ {
-			p := &charinfo[i*screen.Width()+j]
+	for i := 0; i < int(screen.Size.Y); i++ {
+		for j := 0; j < int(screen.Size.X); j++ {
+			p := &charinfo[i*int(screen.Size.X)+j]
 			if (p.Attributes & COMMON_LVB_TRAILING_BYTE) != 0 {
 				// right side of wide charactor
 
