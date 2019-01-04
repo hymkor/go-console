@@ -3,9 +3,11 @@
 package csbi
 
 import (
-	"syscall"
-	"github.com/zetamatta/go-console"
 	"unsafe"
+
+	"golang.org/x/sys/windows"
+
+	"github.com/zetamatta/go-console"
 )
 
 type coordT = console.CoordT
@@ -38,7 +40,7 @@ func (csbi *ConsoleScreenBufferInfoT) Height() int {
 
 var getConsoleScreenBufferInfo = console.Kernel32.NewProc("GetConsoleScreenBufferInfo")
 
-type Handle syscall.Handle
+type Handle windows.Handle
 
 func (h Handle) GetConsoleScreenBufferInfo() *ConsoleScreenBufferInfoT {
 	var csbi ConsoleScreenBufferInfoT

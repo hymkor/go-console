@@ -1,34 +1,31 @@
 package consoleinput
 
 import (
-	"syscall"
 	"unsafe"
+
+	"golang.org/x/sys/windows"
 
 	"github.com/zetamatta/go-console"
 )
 
-type Handle syscall.Handle
+type Handle windows.Handle
 
 func New() Handle {
 	return Handle(console.In())
 }
 
 func (handle Handle) Close() error {
-	return syscall.Close(syscall.Handle(handle))
+	return nil
 }
-
-var getConsoleMode = console.Kernel32.NewProc("GetConsoleMode")
 
 func (handle Handle) GetConsoleMode() uint32 {
 	var mode uint32
-	getConsoleMode.Call(uintptr(handle), uintptr(unsafe.Pointer(&mode)))
+	windows.GetConsoleMode(windows.Handle(handle), &mode)
 	return mode
 }
 
-var setConsoleMode = console.Kernel32.NewProc("SetConsoleMode")
-
 func (handle Handle) SetConsoleMode(flag uint32) {
-	setConsoleMode.Call(uintptr(handle), uintptr(flag))
+	windows.SetConsoleMode(windows.Handle(handle), flag)
 }
 
 var flushConsoleInputBuffer = console.Kernel32.NewProc("FlushConsoleInputBuffer")

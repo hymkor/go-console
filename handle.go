@@ -1,8 +1,8 @@
 package console
 
 import (
+	"golang.org/x/sys/windows"
 	"sync"
-	"syscall"
 )
 
 type CoordT struct {
@@ -34,36 +34,22 @@ func (s SmallRectT) Top() int    { return int(s.top) }
 func (s SmallRectT) Right() int  { return int(s.right) }
 func (s SmallRectT) Bottom() int { return int(s.bottom) }
 
-// Handle is the alias of syscall.Handle
-type Handle = syscall.Handle
+// Handle is the alias of windows.Handle
+type Handle = windows.Handle
 
-var Kernel32 = syscall.NewLazyDLL("kernel32")
+var Kernel32 = windows.NewLazyDLL("kernel32")
 
 var out Handle
 var outOnce sync.Once
 
 // ConOut returns the handle for Console-Output
 func Out() Handle {
-	outOnce.Do(func() {
-		var err error
-		out, err = syscall.Open("CONOUT$", syscall.O_RDWR, 0)
-		if err != nil {
-			panic(err.Error())
-		}
-	})
-	return out
+	return windows.Stdout
 }
 
 var in Handle
 var inOnce sync.Once
 
 func In() Handle {
-	inOnce.Do(func() {
-		var err error
-		in, err = syscall.Open("CONIN$", syscall.O_RDWR, 0)
-		if err != nil {
-			panic(err.Error())
-		}
-	})
-	return in
+	return windows.Stdin
 }
