@@ -11,9 +11,11 @@ func Rune(handle consoleinput.Handle, c rune) uint32 {
 	}
 	keydown := records[0].KeyEvent()
 	keydown.KeyDown = 1
+	keydown.RepeatCount = 1
 	keydown.UnicodeChar = uint16(c)
 
 	keyup := records[1].KeyEvent()
+	keyup.RepeatCount = 1
 	keyup.UnicodeChar = uint16(c)
 
 	return handle.Write(records[:])

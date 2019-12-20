@@ -27,7 +27,7 @@ func (handle Handle) Read(events []InputRecord) uint32 {
 
 type KeyEventRecord struct {
 	KeyDown         int32
-	RepeartCount    uint16
+	RepeatCount     uint16
 	VirtualKeyCode  uint16
 	VirtualScanCode uint16
 	UnicodeChar     uint16
