@@ -1,5 +1,9 @@
 // +build windows
 
+/*
+Package csbi is deprecated. 
+Use https://godoc.org/golang.org/x/sys/windows#GetConsoleScreenBufferInfo
+*/
 package csbi
 
 import (
