@@ -1,10 +1,12 @@
 package console
 
 import (
-	"golang.org/x/sys/windows"
 	"sync"
+
+	"golang.org/x/sys/windows"
 )
 
+// CoordT exists for compatible. You should use windows.Coord
 type CoordT struct {
 	x int16
 	y int16
@@ -14,6 +16,7 @@ func (c CoordT) X() int         { return int(c.x) }
 func (c CoordT) Y() int         { return int(c.y) }
 func (c CoordT) XY() (int, int) { return int(c.x), int(c.y) }
 
+// SmallRectT exists for compatible. You should use windows.SmallRect
 type SmallRectT struct {
 	left   int16
 	top    int16
